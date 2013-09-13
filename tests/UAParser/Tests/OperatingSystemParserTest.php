@@ -16,7 +16,7 @@ class OperatingSystemParserTest extends \PHPUnit_Framework_TestCase
     {
         $this->uaParser = new UAParser();
     }
-        
+
     /**
      * @dataProvider operatingSystemDataProvider
      */

@@ -56,17 +56,49 @@ class UAParser implements UAParserInterface
             'patch'  => null,
         );
 
-        foreach ($this->regexes['browser_parsers'] as $expression) {
+        $regexes = array();
+
+        if (isset($this->regexes['browser_parsers'])) {
+            $regexes = $this->regexes['browser_parsers'];
+        } elseif (isset($this->regexes['user_agent_parsers'])) {
+            $regexes = $this->regexes['user_agent_parsers'];
+        }
+
+        foreach ($regexes as $expression) {
             if (preg_match('/'.str_replace('/','\/',str_replace('\/','/', $expression['regex'])).'/i', $userAgent, $matches)) {
                 if (!isset($matches[1])) { $matches[1] = 'Other'; }
                 if (!isset($matches[2])) { $matches[2] = null; }
                 if (!isset($matches[3])) { $matches[3] = null; }
                 if (!isset($matches[4])) { $matches[4] = null; }
 
+                $major = $matches[2];
+
+                if (isset($expression['major_replacement'])) {
+                    $majorReplacement = $expression['major_replacement'];
+                } elseif (isset($expression['v1_replacement'])) {
+                    $majorReplacement = $expression['v1_replacement'];
+                }
+
+                $minor = $matches[3];
+
+                if (isset($expression['minor_replacement'])) {
+                    $minorReplacement = $expression['minor_replacement'];
+                } elseif (isset($expression['v2_replacement'])) {
+                    $minorReplacement = $expression['v2_replacement'];
+                }
+
+                $patch = $matches[4];
+
+                if (isset($expression['patch_replacement'])) {
+                    $minorReplacement = $expression['patch_replacement'];
+                } elseif (isset($expression['v3_replacement'])) {
+                    $minorReplacement = $expression['v3_replacement'];
+                }
+
                 $result['family'] = isset($expression['family_replacement']) ? str_replace('$1', $matches[1], $expression['family_replacement']) : $matches[1];
-                $result['major']  = isset($expression['major_replacement']) ? $expression['major_replacement'] : $matches[2];
-                $result['minor']  = isset($expression['minor_replacement']) ? $expression['minor_replacement'] : $matches[3];
-                $result['patch']  = isset($expression['patch_replacement']) ? $expression['patch_replacement'] : $matches[4];
+                $result['major']  = isset($majorReplacement) ? $majorReplacement : $major;
+                $result['minor']  = isset($minorReplacement) ? $minorReplacement : $minor;
+                $result['patch']  = isset($patchReplacement) ? $patchReplacement : $patch;
 
                 return $result;
             }
@@ -121,17 +153,67 @@ class UAParser implements UAParserInterface
             'patch'  => null,
         );
 
-        foreach ($this->regexes['operating_system_parsers'] as $expression) {
+        $regexes = array();
+
+        if (isset($this->regexes['operating_system_parsers'])) {
+            $regexes = $this->regexes['operating_system_parsers'];
+        } elseif (isset($this->regexes['os_parsers'])) {
+            $regexes = $this->regexes['os_parsers'];
+        }
+
+        foreach ($regexes as $expression) {
             if (preg_match('/'.str_replace('/','\/',str_replace('\/','/', $expression['regex'])).'/i', $userAgent, $matches)) {
                 if (!isset($matches[1])) { $matches[1] = 'Other'; }
                 if (!isset($matches[2])) { $matches[2] = null; }
                 if (!isset($matches[3])) { $matches[3] = null; }
                 if (!isset($matches[4])) { $matches[4] = null; }
+                if (!isset($matches[5])) { $matches[5] = null; }
 
-                $result['family'] = isset($expression['family_replacement']) ? str_replace('$1', $matches[1], $expression['family_replacement']) : $matches[1];
-                $result['major']  = isset($expression['major_replacement']) ? $expression['major_replacement'] : $matches[2];
-                $result['minor']  = isset($expression['minor_replacement']) ? $expression['minor_replacement'] : $matches[3];
-                $result['patch']  = isset($expression['patch_replacement']) ? $expression['patch_replacement'] : $matches[4];
+                $family = $matches[1];
+
+                if (isset($expression['family_replacement'])) {
+                    $familyReplacement = $expression['family_replacement'];
+                } elseif (isset($expression['os_replacement'])) {
+                    $familyReplacement = $expression['os_replacement'];
+                }
+
+                $major = $matches[2];
+
+                if (isset($expression['major_replacement'])) {
+                    $majorReplacement = $expression['major_replacement'];
+                } elseif (isset($expression['os_v1_replacement'])) {
+                    $majorReplacement = $expression['os_v1_replacement'];
+                }
+
+                $minor = $matches[3];
+
+                if (isset($expression['minor_replacement'])) {
+                    $minorReplacement = $expression['minor_replacement'];
+                } elseif (isset($expression['os_v2_replacement'])) {
+                    $minorReplacement = $expression['os_v2_replacement'];
+                }
+
+                $patch = $matches[4];
+
+                if (isset($expression['patch_replacement'])) {
+                    $minorReplacement = $expression['patch_replacement'];
+                } elseif (isset($expression['os_v3_replacement'])) {
+                    $minorReplacement = $expression['os_v3_replacement'];
+                }
+
+                $patchMinor = $matches[5];
+
+                if (isset($expression['patch_minor_replacement'])) {
+                    $minorReplacement = $expression['patch_minor_replacement'];
+                } elseif (isset($expression['os_v4_replacement'])) {
+                    $minorReplacement = $expression['os_v4_replacement'];
+                }
+
+                $result['family']      = isset($familyReplacement) ? str_replace('$1', $family, $familyReplacement) : $family;
+                $result['major']       = isset($majorReplacement) ? $majorReplacement : $major;
+                $result['minor']       = isset($minorReplacement) ? $minorReplacement : $minor;
+                $result['patch']       = isset($patchReplacement) ? $patchReplacement : $patch;
+                $result['patch_minor'] = isset($patchMinorReplacement) ? $patchMinorReplacement : $patchMinor;
 
                 return $result;
             }
@@ -161,8 +243,14 @@ class UAParser implements UAParserInterface
                 if (!isset($matches[2])) { $matches[2] = null; }
                 if (!isset($matches[3])) { $matches[3] = null; }
 
+                if (isset($expression['device_replacement'])) {
+                    $modelReplacement = $expression['device_replacement'];
+                } elseif (isset($expression['model_replacement'])) {
+                    $modelReplacement = $expression['model_replacement'];
+                }
+
                 $result['constructor'] = isset($expression['constructor_replacement']) ? str_replace(array('$1', '$2'), array($matches[1], $matches[2]), $expression['constructor_replacement']) : $matches[1];
-                $result['model']       = isset($expression['model_replacement']) ? str_replace(array('$1', '$2'), array($matches[1], $matches[2]), $expression['model_replacement']) : $matches[2];
+                $result['model']       = isset($modelReplacement) ? str_replace(array('$1', '$2'), array($matches[1], $matches[2]), $modelReplacement) : $matches[2];
                 $result['type']        = isset($expression['type_replacement']) ? $expression['type_replacement'] : $matches[3];
 
                 return $result;

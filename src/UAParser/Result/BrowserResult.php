@@ -30,6 +30,11 @@ class BrowserResult implements BrowserResultInterface
     /**
      * @var string
      */
+    private $patchMinor = null;
+
+    /**
+     * @var string
+     */
     private $renderingEngine = null;
 
     /**
@@ -80,6 +85,14 @@ class BrowserResult implements BrowserResultInterface
         return $this->patch;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function getPatchMinor()
+    {
+        return $this->patchMinor;
+    }
+
     public function __toString()
     {
         return $this->getFamily().' '.$this->getVersionString();
@@ -103,9 +116,14 @@ class BrowserResult implements BrowserResultInterface
             $this->patch = (int) $data['patch'];
         }
 
+        if (isset($data['patch_minor'])) {
+            $this->patchMinor = (int) $data['patch_minor'];
+        }
+
         $versionString = null !== $this->getMajor() ? $this->getMajor() : '';
         $versionString = null !== $this->getMinor() ? $versionString . '.' . $this->getMinor() : $versionString;
         $versionString = null !== $this->getPatch() ? $versionString . '.' . $this->getPatch() : $versionString;
+        $versionString = null !== $this->getPatchMinor() ? $versionString . '.' . $this->getPatchMinor() : $versionString;
 
         $this->versionString = (string) $versionString;
     }
