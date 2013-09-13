@@ -36,6 +36,14 @@ interface BrowserResultInterface
     public function getPatch();
 
     /**
+    * Returns the browser full version, including the
+    * major, minor and patch parts.
+    *
+    * @return string
+    */
+    public function getVersionString();
+
+    /**
      * Returns the browser rendering engine.
      *
      * @return string

@@ -35,5 +35,30 @@ class BrowserResultTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('integer', $browserResult->getPatch());
 
         $this->assertEquals('Safari 6.0.2', $browserResult->__toString());
+
+        $this->assertEquals('6.0.2', $browserResult->getVersionString());
+    }
+
+    public function testGetVersionStringWithMajorPartOnly()
+    {
+        $browserResult = new BrowserResult();
+        $browserResult->fromArray(array(
+            'family' => 'Safari',
+            'major'  => '6',
+        ));
+
+        $this->assertEquals('6', $browserResult->getVersionString());
+    }
+
+    public function testGetVersionStringWithMajorAndMinorPartsOnly()
+    {
+        $browserResult = new BrowserResult();
+        $browserResult->fromArray(array(
+            'family' => 'Safari',
+            'major'  => '6',
+            'minor'  => '0',
+        ));
+
+        $this->assertEquals('6.0', $browserResult->getVersionString());
     }
 }
